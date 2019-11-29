@@ -72,10 +72,12 @@
     },
     methods: {
       selectRelatedTeam(id) {
-        this.selectedRealTeam = id;
+        this.selectedRelatedTeam = id;
+        console.log(this.selectedRelatedTeam)
       },
       selectRealTeam(id) {
-        this.selectedRelatedTeam = id;
+        this.selectedRealTeam = id;
+        console.log(this.selectedRealTeam)
       },
       approveTeam() {
         console.log(this.selectedRealTeam ? 'Approve team' : 'You should choose Real Team')

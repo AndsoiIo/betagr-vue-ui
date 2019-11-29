@@ -3,7 +3,7 @@
     <tr
         v-if="teams && teams.length"
         v-for="team in teams"
-        v-on:click="isSelect = team.team_id; $emit('select-team', team.team_id)"
+        v-on:click="isSelect = team.team_id; $emit('select-related-team', team.team_id)"
         :class="{'select': isSelect == team.team_id}"
     >
         <td>{{ team.team_id }}</td>

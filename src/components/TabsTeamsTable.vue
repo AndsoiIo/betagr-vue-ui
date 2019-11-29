@@ -44,6 +44,7 @@
                         <!--  TeamsTable  -->
                         <TeamsTable
                                 v-bind:teams="tab.teams"
+                                v-on:select-related-team="selectRelatedTeam"
                         />
                         <!--  If errors show message  -->
                         <tbody v-if="errors && errors.length">
@@ -78,6 +79,11 @@
         },
         components: {
             TeamsTable,
+        },
+        methods: {
+            selectRelatedTeam(id) {
+                this.$emit('select-related-team', id)
+            }
         },
         async created() {
 
