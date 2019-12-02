@@ -44,6 +44,7 @@
                         <!--  TeamsTable  -->
                         <TeamsTable
                                 v-bind:teams="tab.teams"
+                                v-bind:selectedRelatedTeam="selectedRelatedTeam"
                                 v-on:select-related-team="selectRelatedTeam"
                         />
                         <!--  If errors show message  -->

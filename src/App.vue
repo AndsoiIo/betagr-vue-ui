@@ -55,8 +55,14 @@
 
 <!-- Script -->
 <script>
+  import axios from 'axios';
   import TabsTeamsTable from "./components/TabsTeamsTable";
   import RealTeamsList from "./components/RealTeamsList";
+
+  const dashboardHost = process.env.DASHBOARD_API_HOST || 'localhost';
+  const dashboardPort = process.env.DASHBOARD_API_PORT || 5050;
+
+  let dashboardUrl = (dashboardHost.indexOf('http://')+1 ? dashboardHost : 'http://'+dashboardHost) + dashboardPort + '/api/approve/teams/';
 
   export default {
     name: 'app',
@@ -71,15 +77,21 @@
       RealTeamsList,
     },
     methods: {
-      selectRelatedTeam(id) {
-        this.selectedRelatedTeam = id;
-        console.log(this.selectedRelatedTeam)
+        selectRelatedTeam(id) {
+          this.selectedRelatedTeam = this.selectedRelatedTeam == id ? null : id;
+          console.log(this.selectedRelatedTeam)
       },
       selectRealTeam(id) {
         this.selectedRealTeam = id;
         console.log(this.selectedRealTeam)
       },
-      approveTeam() {
+      async approveTeam() {
+        if (this.selectedRealTeam && this.selectedRelatedTeam) {
+          console.log('Send Request to ', dashboardUrl+this.selectedRelatedTeam);
+          console.log('with "{real_team_id: `' + this.selectedRealTeam +'`"} in body.');
+        } else {
+          console.log('You should select a Real Team and a Related Team.')
+        }
         console.log(this.selectedRealTeam ? 'Approve team' : 'You should choose Real Team')
       },
       moderateTeam() {

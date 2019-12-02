@@ -20,7 +20,7 @@
         >
             <li :class="{'active': isSelect == team.real_team_id, ' list-group-item list-group-item-action pointer': true}"
                 v-for="team in realTeamsList"
-                v-on:click="$emit('select-real-team', team.real_team_id); isSelect = team.real_team_id"
+                v-on:click="isSelect = isSelect == team.real_team_id? null : team.real_team_id; $emit('select-real-team', isSelect)"
             >
                 {{ team.name }}
             </li>

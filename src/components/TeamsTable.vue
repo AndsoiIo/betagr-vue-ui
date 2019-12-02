@@ -3,8 +3,8 @@
     <tr
         v-if="teams && teams.length"
         v-for="team in teams"
-        v-on:click="isSelect = team.team_id; $emit('select-related-team', team.team_id)"
-        :class="{'select': isSelect == team.team_id}"
+        v-on:click="selectTeam = selectTeam == team.team_id? null:team.team_id; $emit('select-related-team', selectTeam)"
+        :class="[selectTeam == team.team_id ? 'select' : '', true ? team.status : '' ]"
     >
         <td>{{ team.team_id }}</td>
         <td>{{ team.name }}</td>
@@ -12,7 +12,7 @@
         <td>
             {{ team.status }}
             <i class="material-icons"
-               v-if="isSelect == team.team_id">
+               v-if="selectTeam == team.team_id">
                 double_arrow
             </i>
         </td>
@@ -32,17 +32,17 @@
         },
         data() {
             return {
-               isSelect: null,
+               selectTeam: null,
             }
         },
     }
 </script>
 
 <style scoped>
-    .status-approved {
+    .approved {
         background-color: aquamarine;
     }
-    .status-approved {
+    .moderated {
         background-color: bisque;
     }
     .select {
