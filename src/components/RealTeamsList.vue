@@ -41,7 +41,11 @@
 <script>
     import axios from 'axios';
 
-    const parserUrl = "http://localhost:8000/parse-links?parse_by=real_teams";
+    const parserHost = process.env.PARSER_API_HOST || 'localhost';
+    const parserPort = process.env.PARSER_API_PORT || 8000;
+
+    let parserUrl = (parserHost.indexOf('http://')+1 ? parserHost : 'http://'+parserHost) + ':' + parserPort + '/parse-links?parse_by=real_teams';
+
     let selectedTeam = null;
 
     export default {

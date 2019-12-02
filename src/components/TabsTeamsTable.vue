@@ -65,7 +65,10 @@
     import axios from 'axios';
     import TeamsTable from "./TeamsTable";
 
-    const parserUrl = "http://localhost:8000/parse-links?parse_by=teams";
+    const parserHost = process.env.PARSER_API_HOST || 'localhost';
+    const parserPort = process.env.PARSER_API_PORT || 8000;
+
+    let parserUrl = (parserHost.indexOf('http://')+1 ? parserHost : 'http://'+parserHost) + ':' + parserPort + '/parse-links/';
 
     export default {
         name: "TabsTeamsTable",
@@ -93,7 +96,7 @@
 
             while (i < 4) {
                 i = i + 1;
-                let url = "http://localhost:8000/parse-links/"+i+"?parse_by=teams";
+                let url = parserUrl+i+"?parse_by=teams";
                 try {
                     response = await axios.get(url);
                 } catch (e) {
