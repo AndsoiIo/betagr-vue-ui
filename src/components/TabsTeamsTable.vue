@@ -44,7 +44,6 @@
                         <!--  TeamsTable  -->
                         <TeamsTable
                                 v-bind:teams="tab.teams"
-                                v-bind:selectedRelatedTeam="selectedRelatedTeam"
                                 v-on:select-related-team="selectRelatedTeam"
                         />
                         <!--  If errors show message  -->
@@ -101,7 +100,7 @@
                     this.errors.push(e)
                 }
                 status = response.status;
-                console.log(i);
+                console.log('Parse link: '+url);
                 let firstObjKey = Object.keys(response.data)[0];
                 let siteName = response.data[firstObjKey].site_name;
                 this.relatedTeamsTabs.push({title: siteName, teams: response.data});

@@ -70,6 +70,7 @@
       return {
         selectedRealTeam: null,
         selectedRelatedTeam: null,
+        errors: [],
       }
     },
     components: {
@@ -79,14 +80,19 @@
     methods: {
         selectRelatedTeam(id) {
           this.selectedRelatedTeam = this.selectedRelatedTeam == id ? null : id;
-          console.log(this.selectedRelatedTeam)
+          console.log('Select Related Team ID: ' + this.selectedRelatedTeam)
       },
       selectRealTeam(id) {
         this.selectedRealTeam = id;
-        console.log(this.selectedRealTeam)
+        console.log('Select Real Team ID: '+ this.selectedRealTeam)
       },
       async approveTeam() {
         if (this.selectedRealTeam && this.selectedRelatedTeam) {
+          // try {
+          //   response = await axios.put(dashboardUrl + this.selectedRelatedTeam, {real_team_id: this.selectedRealTeam});
+          // } catch (e) {
+          //   this.errors.push(e)
+          // }
           console.log('Send Request to ', dashboardUrl+this.selectedRelatedTeam);
           console.log('with "{real_team_id: `' + this.selectedRealTeam +'`"} in body.');
         } else {

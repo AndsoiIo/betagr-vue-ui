@@ -1,9 +1,18 @@
-FROM node:alpine
-RUN apk add --no-cache bash
-RUN npm install -g @vue/cli
+FROM node:lts-alpine
+
+RUN npm install -g http-server
+
 WORKDIR /app
-ENV PATH /app/node_modules/.bin:$PATH
-VOLUME ["/app"]
+
+# copy all dependencies
+COPY package*.json ./
+
 RUN npm install
+
+# copy all project diles to /app/
+COPY . .
+
+RUN npm run serve
+
 EXPOSE 8080
-CMD ["npm", "run", "serve"]
+CMD [ "http-server", "dist" ]
