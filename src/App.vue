@@ -11,7 +11,7 @@
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <div class="modal-body">
+          <div class="modal-body text-left">
             <p>Enter your credential to get the session token</p>
             <form>
               <div class="form-group">
@@ -31,6 +31,11 @@
                         placeholder="Password"
                         v-model="password"
                 >
+              </div>
+              <div v-if="signInErrors">
+                <div class="alert alert-danger" role="alert">
+                  {{ signInErrors }}
+                </div>
               </div>
             </form>
           </div>
@@ -122,6 +127,8 @@
   const ssoHost = process.env.SSO_API_HOST || 'localhost';
   const ssoPort = process.env.SSO_API_PORT || 8000;
   let ssoUrl = (ssoHost.indexOf('http://')+1 ? ssoHost : 'http://'+ssoHost)+':'+ ssoPort + '/sign-in';
+  // let ssoUrl = 'http://localhost:8080/';
+  // let dashboardUrl = 'http://localhost:8080/api';
 
   export default {
     name: 'app',
@@ -129,12 +136,13 @@
       return {
         selectedRealTeam: null,
         selectedRelatedTeam: null,
-        modalShow: false,
+        modalShow: true,
         search: '',
         username: '',
         password: '',
-        signInErrors: [],
+        signInErrors: false,
         errors: [],
+        userPermisions: [],
       }
     },
     components: {
@@ -152,13 +160,12 @@
       },
       async approveTeam() {
         if (this.selectedRealTeam && this.selectedRelatedTeam) {
-          // try {
-          //   response = await axios.put(dashboardUrl + this.selectedRelatedTeam, {real_team_id: this.selectedRealTeam});
-          // } catch (e) {
-          //   this.errors.push(e)
-          // }
-          console.log('Send Request to ', dashboardUrl+this.selectedRelatedTeam);
-          console.log('with "{real_team_id: `' + this.selectedRealTeam +'`"} in body.');
+          try {
+            response = await axios.put(`${dashboardUrl}/${this.selectedRelatedTeam}`, {withCredentials: true, real_team_id: this.selectedRealTeam});
+          } catch (e) {
+            this.errors.push(e);
+            console.log(e);
+          }
         } else {
           console.log('You should select a Real Team and a Related Team.')
         }
@@ -168,15 +175,19 @@
         console.log(this.selectedRealTeam ? 'Approve team' : 'You should choose Real Team')
       },
       async signIn() {
+        let response;
         if (this.username && this.password) {
           try {
-            response = await axios.post(ssoUrl, {username: this.username, password: this.password});
+            response = await axios.post(ssoUrl+'/sign-in', {username: this.username, password: this.password} );
           } catch (e) {
-            console.log(e);
-            this.signInErrors.push(e);
+            this.signInErrors = e;
           }
-          console.log(response.cookie.session);
-          localStorage.session = response.cookie.session || 'None';
+          console.log(response);
+          if (response && document.cookie.indexOf('session')+1) {
+            localStorage.session = document.cookie.split('=')[1];
+            console.log('+++++Receive session+++++\n', localStorage.session)
+          }
+          console.log("-----"+ response +"-----\n")
         }
       },
     },
@@ -201,5 +212,8 @@
   }
   .modal {
     display: block;
+  }
+  .hide {
+    display: none;
   }
 </style>
