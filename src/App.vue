@@ -40,6 +40,7 @@
 
         <TabsTeamsTable
           v-on:select-related-team="selectRelatedTeam"
+          v-on:update-teams="updateTeams"
         />
 
         <RealTeamsList
@@ -62,7 +63,12 @@
   const dashboardHost = process.env.DASHBOARD_API_HOST || 'localhost';
   const dashboardPort = process.env.DASHBOARD_API_PORT || 5050;
 
+  const parserHost = process.env.PARSER_API_HOST || 'localhost';
+  const parserPort = process.env.PARSER_API_PORT || 8000;
+
   let dashboardUrl = (dashboardHost.indexOf('http://')+1 ? dashboardHost : 'http://'+dashboardHost) + dashboardPort + '/api/approve/teams/';
+
+  let parserUrl = (parserHost.indexOf('http://')+1 ? parserHost : 'http://'+parserHost) + ':' + parserPort + '/parse-links';
 
   export default {
     name: 'app',
@@ -81,6 +87,14 @@
         selectRelatedTeam(id) {
           this.selectedRelatedTeam = this.selectedRelatedTeam == id ? null : id;
           console.log('Select Related Team ID: ' + this.selectedRelatedTeam)
+      },
+      async updateTeams() {
+        try {
+          response = await axios.put(parserUrl + '?parse_by=teams');
+        } catch (e) {
+          this.errors.push(e)
+        }
+        console.log('Send Request to ', parserUrl+'?parse_by=teams');
       },
       selectRealTeam(id) {
         this.selectedRealTeam = id;
