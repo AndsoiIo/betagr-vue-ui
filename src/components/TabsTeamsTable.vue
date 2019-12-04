@@ -4,7 +4,8 @@
             <h1 class="h2">Related Teams Table</h1>
             <div class="btn-toolbar mb-2 mb-md-0">
                 <div class="btn-group mr-2">
-                    <button type="button" class="btn btn-sm btn-outline-secondary">Update DB</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary"
+                    v-on:click="$emit('update-teams')">Update DB</button>
                     <button type="button" class="btn btn-sm btn-outline-secondary">Refresh</button>
                 </div>
             </div>

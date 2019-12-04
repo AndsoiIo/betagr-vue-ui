@@ -101,6 +101,7 @@
 
         <TabsTeamsTable
                 v-on:select-related-team="selectRelatedTeam"
+                v-on:update-teams="updateTeams"
         />
 
         <RealTeamsList
@@ -127,6 +128,10 @@
   const ssoHost = process.env.SSO_API_HOST || 'localhost';
   const ssoPort = process.env.SSO_API_PORT || 8085;
   let ssoUrl = (ssoHost.indexOf('http://')+1 ? ssoHost : 'http://'+ssoHost)+':'+ ssoPort;
+
+  const parserHost = process.env.PARSER_API_HOST || 'localhost';
+  const parserPort = process.env.PARSER_API_PORT || 8085;
+  let parserUrl = (parserHost.indexOf('http://')+1 ? parserHost : 'http://'+parserHost)+':'+ parserPort;
   export default {
     name: 'app',
     data() {
