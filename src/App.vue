@@ -60,8 +60,8 @@
       <ul class="navbar-nav px-3">
         <li class="nav-item text-nowrap">
           <a
-                v-on:click="modalShow = true"
-                class="nav-link" href="#"
+                  v-on:click="modalShow = true"
+                  class="nav-link" href="#"
           >
             Sign In
           </a>
@@ -100,13 +100,13 @@
         </nav>
 
         <TabsTeamsTable
-          v-on:select-related-team="selectRelatedTeam"
+                v-on:select-related-team="selectRelatedTeam"
         />
 
         <RealTeamsList
-          v-on:select-real-team="selectRealTeam"
-          v-on:approve-team="approveTeam"
-          v-on:moderate-team="moderateTeam"
+                v-on:select-real-team="selectRealTeam"
+                v-on:approve-team="approveTeam"
+                v-on:moderate-team="moderateTeam"
         />
 
       </div>
@@ -122,13 +122,11 @@
 
   const dashboardHost = process.env.DASHBOARD_API_HOST || 'localhost';
   const dashboardPort = process.env.DASHBOARD_API_PORT || 5050;
-  let dashboardUrl = (dashboardHost.indexOf('http://')+1 ? dashboardHost : 'http://'+dashboardHost)+':'+ dashboardPort + '/api/approve/teams/';
+  let dashboardUrl = (dashboardHost.indexOf('http://')+1 ? dashboardHost : 'http://'+dashboardHost)+':'+ dashboardPort + '/api/moderate-team/';
 
   const ssoHost = process.env.SSO_API_HOST || 'localhost';
-  const ssoPort = process.env.SSO_API_PORT || 8000;
-  let ssoUrl = (ssoHost.indexOf('http://')+1 ? ssoHost : 'http://'+ssoHost)+':'+ ssoPort + '/sign-in';
-  // let ssoUrl = 'http://localhost:8080/';
-  // let dashboardUrl = 'http://localhost:8080/api';
+  const ssoPort = process.env.SSO_API_PORT || 8085;
+  let ssoUrl = (ssoHost.indexOf('http://')+1 ? ssoHost : 'http://'+ssoHost)+':'+ ssoPort;
 
   export default {
     name: 'app',
@@ -142,7 +140,7 @@
         password: '',
         signInErrors: false,
         errors: [],
-        userPermisions: [],
+        userPermissions: [],
       }
     },
     components: {
@@ -159,9 +157,20 @@
         console.log('Select Real Team ID: '+ this.selectedRealTeam)
       },
       async approveTeam() {
+        if (this.userPermissions.length) {
+          this.modalShow = true;
+          alert('You need to be logged!');
+          return
+        }
         if (this.selectedRealTeam && this.selectedRelatedTeam) {
           try {
-            response = await axios.put(`${dashboardUrl}/${this.selectedRelatedTeam}`, {withCredentials: true, real_team_id: this.selectedRealTeam});
+            response = await axios({method: 'patch',
+                                    url: `${dashboardUrl}${this.selectedRelatedTeam}`,
+                                    withCredentials: true,
+                                    data: {
+                                      real_team_id: this.selectedRealTeam,
+                                    }
+            })
           } catch (e) {
             this.errors.push(e);
             console.log(e);
@@ -171,23 +180,62 @@
         }
         console.log(this.selectedRealTeam ? 'Approve team' : 'You should choose Real Team')
       },
-      moderateTeam() {
-        console.log(this.selectedRealTeam ? 'Approve team' : 'You should choose Real Team')
+
+      async moderateTeam() {
+        if (this.userPermissions.length) {
+          this.modalShow = true;
+          alert('You need to be logged!');
+          return
+        }
+        if (this.selectedRealTeam && this.selectedRelatedTeam) {
+          try {
+            response = await axios({method: 'patch',
+                                    url: `${dashboardUrl}${this.selectedRelatedTeam}`,
+                                    withCredentials: true,
+                                    data: {
+                                      real_team_id: this.selectedRealTeam,
+                                    }
+            })
+          } catch (e) {
+            this.errors.push(e);
+            console.log(e);
+          }
+        } else {
+          console.log('You should select a Real Team and a Related Team.')
+        }
+        console.log(this.selectedRealTeam ? 'Moderate team' : 'You should choose Real Team')
       },
+
       async signIn() {
         let response;
         if (this.username && this.password) {
           try {
-            response = await axios.post(ssoUrl+'/sign-in', {username: this.username, password: this.password} );
+            response = await axios({method: 'post',
+              url: `${ssoUrl}/sign-in`,
+              withCredentials: true,
+              data: {
+                username: this.username,
+                password: this.password,
+              }
+            })
           } catch (e) {
             this.signInErrors = e;
           }
           console.log(response);
           if (response && document.cookie.indexOf('session')+1) {
             localStorage.session = document.cookie.split('=')[1];
-            console.log('+++++Receive session+++++\n', localStorage.session)
+            this.modalShow = false;
+
+            try {
+              response = await axios({method: 'get',
+                url: `${ssoUrl}/get-permissions`,
+                withCredentials: true,
+              })
+            } catch (e) {
+              console.log(e);
+            }
+            console.log(response.data)
           }
-          console.log("-----"+ response +"-----\n")
         }
       },
     },
@@ -216,4 +264,4 @@
   .hide {
     display: none;
   }
-</style>
+  </style>
