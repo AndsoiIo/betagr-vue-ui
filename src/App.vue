@@ -122,12 +122,11 @@
 
   const dashboardHost = process.env.DASHBOARD_API_HOST || 'localhost';
   const dashboardPort = process.env.DASHBOARD_API_PORT || 5050;
-  let dashboardUrl = (dashboardHost.indexOf('http://')+1 ? dashboardHost : 'http://'+dashboardHost)+':'+ dashboardPort + '/api/moderate-team/';
+  let dashboardUrl = (dashboardHost.indexOf('http://')+1 ? dashboardHost : 'http://'+dashboardHost)+':'+ dashboardPort;
 
   const ssoHost = process.env.SSO_API_HOST || 'localhost';
   const ssoPort = process.env.SSO_API_PORT || 8085;
   let ssoUrl = (ssoHost.indexOf('http://')+1 ? ssoHost : 'http://'+ssoHost)+':'+ ssoPort;
-
   export default {
     name: 'app',
     data() {
@@ -139,7 +138,6 @@
         username: '',
         password: '',
         signInErrors: false,
-        errors: [],
         userPermissions: [],
       }
     },
@@ -165,14 +163,13 @@
         if (this.selectedRealTeam && this.selectedRelatedTeam) {
           try {
             response = await axios({method: 'patch',
-                                    url: `${dashboardUrl}${this.selectedRelatedTeam}`,
+                                    url: `${dashboardUrl}/api/approve-team/${this.selectedRelatedTeam}`,
                                     withCredentials: true,
                                     data: {
                                       real_team_id: this.selectedRealTeam,
                                     }
             })
           } catch (e) {
-            this.errors.push(e);
             console.log(e);
           }
         } else {
@@ -189,15 +186,16 @@
         }
         if (this.selectedRealTeam && this.selectedRelatedTeam) {
           try {
-            response = await axios({method: 'patch',
-                                    url: `${dashboardUrl}${this.selectedRelatedTeam}`,
-                                    withCredentials: true,
-                                    data: {
-                                      real_team_id: this.selectedRealTeam,
-                                    }
-            })
+            response = await axios(
+                    {
+                      method: 'patch',
+                      url: `${dashboardUrl}/api/moderate-team/${this.selectedRelatedTeam}`,
+                      data: {
+                        real_team_id: this.selectedRealTeam,
+                      },
+                      withCredentials: true
+                    })
           } catch (e) {
-            this.errors.push(e);
             console.log(e);
           }
         } else {
@@ -205,7 +203,6 @@
         }
         console.log(this.selectedRealTeam ? 'Moderate team' : 'You should choose Real Team')
       },
-
       async signIn() {
         let response;
         if (this.username && this.password) {
