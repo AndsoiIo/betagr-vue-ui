@@ -36,7 +36,7 @@
                     <table class="table table-striped table-borderless">
                         <thead class="thead-dark">
                         <tr>
-                            <th>ID</th>
+                            <th>Real team ID</th>
                             <th>Teams title</th>
                             <th>Created on</th>
                             <th>Status</th>

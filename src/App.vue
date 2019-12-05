@@ -130,7 +130,7 @@
   let ssoUrl = (ssoHost.indexOf('http://')+1 ? ssoHost : 'http://'+ssoHost)+':'+ ssoPort;
 
   const parserHost = process.env.PARSER_API_HOST || 'localhost';
-  const parserPort = process.env.PARSER_API_PORT || 8085;
+  const parserPort = process.env.PARSER_API_PORT || 8000;
   let parserUrl = (parserHost.indexOf('http://')+1 ? parserHost : 'http://'+parserHost)+':'+ parserPort;
   export default {
     name: 'app',
@@ -159,20 +159,25 @@
         this.selectedRealTeam = id;
         console.log('Select Real Team ID: '+ this.selectedRealTeam)
       },
+      async updateTeams() {
+        try {
+          response = await axios.put(parserUrl + '/parse-links?parse_by=teams');
+        } catch (e) {
+          this.errors.push(e)
+        }
+        console.log('Send Request to ', parserUrl+'/parse-links?parse_by=teams');
+      },
       async approveTeam() {
         if (this.userPermissions.length) {
           this.modalShow = true;
           alert('You need to be logged!');
           return
         }
-        if (this.selectedRealTeam && this.selectedRelatedTeam) {
+        if (this.selectedRelatedTeam) {
           try {
             response = await axios({method: 'patch',
                                     url: `${dashboardUrl}/api/approve-team/${this.selectedRelatedTeam}`,
                                     withCredentials: true,
-                                    data: {
-                                      real_team_id: this.selectedRealTeam,
-                                    }
             })
           } catch (e) {
             console.log(e);
@@ -180,7 +185,7 @@
         } else {
           console.log('You should select a Real Team and a Related Team.')
         }
-        console.log(this.selectedRealTeam ? 'Approve team' : 'You should choose Real Team')
+        console.log('Approve team')
       },
 
       async moderateTeam() {
