@@ -4,7 +4,8 @@
             <h1 class="h2">Related Teams Table</h1>
             <div class="btn-toolbar mb-2 mb-md-0">
                 <div class="btn-group mr-2">
-                    <button type="button" class="btn btn-sm btn-outline-secondary">Update DB</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary"
+                            v-on:click="$emit('update-teams')">Update DB</button>
                     <button type="button" class="btn btn-sm btn-outline-secondary">Refresh</button>
                 </div>
             </div>
@@ -35,8 +36,7 @@
                     <table class="table table-striped table-borderless">
                         <thead class="thead-dark">
                         <tr>
-                            <th>ID</th>
-                            <th>Teams title</th>
+                            <th>Title</th>
                             <th>Created on</th>
                             <th>Status</th>
                         </tr>
@@ -48,8 +48,8 @@
                         />
                         <!--  If errors show message  -->
                         <tbody v-if="errors && errors.length">
-                            <tr>
-                                <td>{{ error.message }}</td>
+                            <tr v-for="error in errors">
+                                <td>{{ error }}</td>
                             </tr>
                         </tbody>
 
@@ -94,19 +94,23 @@
             let response = null;
             let status = 200;
 
-            while (i < 4) {
+            while (status == 200) {
                 i = i + 1;
                 let url = parserUrl+i+"?parse_by=teams";
                 try {
                     response = await axios.get(url);
+                    status = response.status;
                 } catch (e) {
-                    this.errors.push(e)
+                    status = e.status;
+                    this.errors.push(e);
+                    break
                 }
-                status = response.status;
-                console.log('Parse link: '+url);
-                let firstObjKey = Object.keys(response.data)[0];
-                let siteName = response.data[firstObjKey].site_name;
-                this.relatedTeamsTabs.push({title: siteName, teams: response.data});
+                if (response) {
+                    console.log('Parse link: '+url);
+                    let firstObjKey = Object.keys(response.data)[0];
+                    let siteName = response.data[firstObjKey].site_name;
+                    this.relatedTeamsTabs.push({title: siteName, teams: response.data});
+                };
             }
         },
     }
