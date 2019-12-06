@@ -7,9 +7,11 @@
         </div>
         <div class="opaque text-left">
             <button type="button" class="btn btn-sm btn-outline-success"
+                    v-if="isAdmin"
                     v-on:click="$emit('approve-team')">Approve</button>
 
             <button type="button" class="btn btn-sm btn-outline-primary"
+                    v-if="isModerator"
                     v-on:click="$emit('moderate-team')">Moderate</button>
         </div>
 
@@ -22,7 +24,7 @@
                 v-for="team in realTeamsList"
                 v-on:click="isSelect = isSelect == team.real_team_id? null : team.real_team_id; $emit('select-real-team', isSelect)"
             >
-                {{ team.name }}
+                <i v-if="isAdmin">{{ team.real_team_id }}</i> {{ team.name }}
             </li>
         </ul>
 
@@ -44,26 +46,17 @@
     const parserHost = process.env.PARSER_API_HOST || 'localhost';
     const parserPort = process.env.PARSER_API_PORT || 8000;
 
-    let parserUrl = (parserHost.indexOf('http://')+1 ? parserHost : 'http://'+parserHost) + ':' + parserPort + '/parse-links?parse_by=real_teams';
+    let parserUrl = (parserHost.indexOf('http://')+1 ? parserHost : 'http://'+parserHost) + ':' + parserPort + '/links?data=real_teams';
 
     let selectedTeam = null;
 
     export default {
         name: "RealTeamsList",
+        props: ['isAdmin', 'isModerator', 'realTeamsList'],
         data() {
             return {
                 isSelect: null,
-                realTeamsList: [],
                 errors: [],
-            }
-        },
-        async created() {
-
-            try {
-                const response = await axios.get(parserUrl);
-                this.realTeamsList = response.data
-            } catch (e) {
-                this.errors.push(e)
             }
         },
     }
@@ -81,6 +74,10 @@
     .opaque {
         height: 42px;
         width: 100%;
+    }
+    .list-group-item {
+        display: flex;
+        justify-content: space-between;
     }
 
 </style>

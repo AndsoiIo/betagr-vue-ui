@@ -10,10 +10,6 @@
         <td>{{ new Date(team.created_on).toLocaleString() }}</td>
         <td>
             {{ team.status || 'N/A' }}
-            <i class="material-icons"
-               v-if="selectTeam == team.team_id">
-                double_arrow
-            </i>
         </td>
     </tr>
     </tbody>
@@ -31,7 +27,7 @@
         },
         data() {
             return {
-               selectTeam: null,
+                selectTeam: null,
             }
         },
     }
